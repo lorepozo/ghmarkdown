@@ -42,3 +42,9 @@ Hosting server on port 8000
 
 
 Use `ghmarkdown --help` to see all available commands and parameters
+
+## Similar
+
+- https://github.com/msabramo/setuptools-markdown -- this will call `pandoc` on the fly for you to transform Markdown to reST when you register the package with PyPI. So you can write your README exclusively in Markdown and have the description still render nicely on PyPI. Requires pandoc. 
+
+- https://github.com/msabramo/pydocverter -- this is similar to your package, but it uses Docverter, which is a Web service that uses pandoc and Calibre to transform and render documents with various formats, including Markdown. 
