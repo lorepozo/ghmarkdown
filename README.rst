@@ -3,9 +3,12 @@ ghmarkdown
 
 The complete command-line tool for GitHub-flavored markdown. It provides a convenient interface for the API provided by GitHub.
 
+ghmarkdown is much more honed-in than `pandoc <http://johnmacfarlane.net/pandoc>`__, a **massive** tool with *far* more conversion capabilities (but lacking its own hosting capabilities).
+
 Features
 --------
 
+-  Host your markdown locally to easily view your changes!
 -  Easy to `install <https://github.com/lukedmor/ghmarkdown#installation>`__
 -  Easy to `use <https://github.com/lukedmor/ghmarkdown#usage>`__
 -  Works on Mac, Linux and Windows
@@ -25,21 +28,23 @@ Run your markdown on a local server:
 
 .. code:: bash
 
+    # these do the same thing
+    $ ghmarkdown -s -i my_file.md
     $ ghmarkdown --serve --input my_file.md
-    $ # or, with more bash:
     $ cat my_file.md | ghmarkdown --serve
 
 
-Save your markdown locally:
+Parse your markdown to HTML locally:
 
 .. code:: bash
 
+    # these do the same thing
+    $ ghmarkdown -i my_file.md -o my_page.html
     $ ghmarkdown --input my_file.md --output my_page.html
-    $ # or, with more bash:
     $ cat my_file.md | ghmarkdown > my_page.html
 
 
-Write markdown directly into stdin:
+Write markdown directly into stdin, and serve it:
 
 .. code::
 
@@ -54,3 +59,4 @@ Write markdown directly into stdin:
 
 
 Use ``ghmarkdown --help`` to see all available commands and parameters
+
