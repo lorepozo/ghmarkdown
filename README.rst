@@ -36,7 +36,7 @@ Save your markdown locally:
 
     $ ghmarkdown --input my_file.md --output my_page.html
     $ # or, with more bash:
-    $ cat my_file.md | ghmarkdown | my_page.html
+    $ cat my_file.md | ghmarkdown > my_page.html
 
 
 Write markdown directly into stdin:
