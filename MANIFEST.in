@@ -1,0 +1,7 @@
+include *.md
+include *.rst
+
+global-exclude *.pyc
+global-exclude .DS_Store
+
+include ghmarkdown/*.dat
