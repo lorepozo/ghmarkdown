@@ -9,7 +9,7 @@ import base64
 import sys
 import os
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
