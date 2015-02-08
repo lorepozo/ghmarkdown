@@ -11,7 +11,7 @@ import base64
 import sys
 import os
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -96,7 +96,7 @@ def changed_file():
     return data
 
 
-def run_server(port=8000, stdin=False):
+def run_server(port=8000):
     """ Runs server on port with html response """
     import BaseHTTPServer
 
@@ -123,13 +123,15 @@ def run_server(port=8000, stdin=False):
     server_class = BaseHTTPServer.HTTPServer
     handler = SilentHTMLHandler if silent else HTMLHandler
     httpd = server_class(("localhost", port), handler)
-    print("Hosting server on port %d. Ctrl-c to exit" % port)
+    if not silent:
+        print("Hosting server on port %d. Ctrl-c to exit" % port)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
     httpd.server_close()
-    print("Shutting down server")
+    if not silent:
+        print("Shutting down server")
 
 
 def rate_limit_info():
@@ -183,7 +185,6 @@ def main():
     else:
         try:
             data = "".join(sys.stdin.readlines())
-            stdin = True
         except KeyboardInterrupt:
             exit()
 
