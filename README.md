@@ -3,6 +3,8 @@ The complete command-line tool for GitHub-flavored markdown. It provides a conve
 
 ghmarkdown's `--serve` feature let's you locally view your markdown __live__, so you can view your changes as you work!
 
+![example usage gif](http://i.imgur.com/WUCWpOM.gif)
+
 ## Features
 
 - Host your markdown locally to easily view your changes _as you make them_!
@@ -19,7 +21,7 @@ pip install ghmarkdown
 Run your markdown on a local server:
 ```bash
 # these do the same thing
-$ ghmarkdown -s -i my_file.md
+$ ghmarkdown -si my_file.md
 $ ghmarkdown --serve --input my_file.md
 $ cat my_file.md | ghmarkdown --serve
 ```

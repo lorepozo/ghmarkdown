@@ -5,6 +5,9 @@ The complete command-line tool for GitHub-flavored markdown. It provides a conve
 
 ghmarkdown's `--serve` feature let's you locally view your markdown **live**, so you can view your changes as you work!
 
+.. figure:: http://i.imgur.com/WUCWpOM.gif
+   :alt: example usage gif
+
 Features
 --------
 
@@ -29,7 +32,7 @@ Run your markdown on a local server:
 .. code:: bash
 
     # these do the same thing
-    $ ghmarkdown -s -i my_file.md
+    $ ghmarkdown -si my_file.md
     $ ghmarkdown --serve --input my_file.md
     $ cat my_file.md | ghmarkdown --serve
 
