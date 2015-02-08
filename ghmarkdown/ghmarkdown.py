@@ -9,7 +9,7 @@ import base64
 import sys
 import os
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -116,7 +116,7 @@ def run_server(port=8000, stdin=False):
 
     server_class = BaseHTTPServer.HTTPServer
     httpd = server_class(("localhost", port), HTMLHandler)
-    print("Hosting server on port %d" % port)
+    print("Hosting server on port %d. Ctrl-c to exit" % port)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
