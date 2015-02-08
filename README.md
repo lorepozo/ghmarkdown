@@ -23,7 +23,7 @@ Run your markdown on a local server:
 # these do the same thing
 $ ghmarkdown -si my_file.md
 $ ghmarkdown --serve --input my_file.md
-$ cat my_file.md | ghmarkdown --serve
+$ cat my_file.md | ghmarkdown --serve # doesn't update changes
 ```
 
 Parse your markdown to HTML locally:
@@ -34,19 +34,7 @@ $ ghmarkdown --input my_file.md --output my_page.html
 $ cat my_file.md | ghmarkdown > my_page.html
 ```
 
-Write markdown directly into stdin, and serve it:
-
-<pre>
-$ ghmarkdown --serve
-# Hello there, _user_!
-```python
-def foo(bar):
-    raise ZeroDivisionError()
-```
-&lt;Ctrl-d&gt;
-Hosting server on port 8000
-</pre>
-
-
 Use `ghmarkdown --help` to see all available commands and parameters
+
+GitHub limits usage of its api, so if you want more than 60 req/hr use `--login` (you'll get 5000 req/hr!)
 

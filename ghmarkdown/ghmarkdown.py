@@ -1,7 +1,9 @@
-#!/usr/bin/python
+"""
+ghmarkdown
+==========
 
-# (c) 2014 - Lucas Morales (https://github.com/lukedmor)
-# GNU Public License
+The complete command-line tool for (GitHub-flavored) markdown
+"""
 
 import argparse
 import hashlib
@@ -9,16 +11,16 @@ import base64
 import sys
 import os
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info[0] == 3:
     import urllib.request as ul
-    inp = input
+    universal_inp = input
 else:
     import urllib2 as ul
-    inp = raw_input
+    universal_inp = raw_input
 
 description = "The complete command-line tool for GitHub-flavored markdown"
 usage = """
@@ -114,8 +116,13 @@ def run_server(port=8000, stdin=False):
             s.end_headers()
             s.wfile.write(standalone(html))
 
+    class SilentHTMLHandler(HTMLHandler):
+        def log_message(self, format, *args):
+            return
+
     server_class = BaseHTTPServer.HTTPServer
-    httpd = server_class(("localhost", port), HTMLHandler)
+    handler = SilentHTMLHandler if silent else HTMLHandler
+    httpd = server_class(("localhost", port), handler)
     print("Hosting server on port %d. Ctrl-c to exit" % port)
     try:
         httpd.serve_forever()
@@ -158,7 +165,7 @@ def main():
     parser.add_argument('--bare', '-b', action='store_true',
                         help='disable standalone html (gives fragment)')
     parser.add_argument('--silent', '-q', action='store_true',
-                        help='prevents display of rate limit information')
+                        help='silences server output and rate information')
     parser.add_argument('--serve', '-s', action='store_true',
                         help='locally serve parsed markdown')
     parser.add_argument('--port', '-p', metavar='PORT')
@@ -183,7 +190,7 @@ def main():
     if args.login:
         from getpass import getpass
 
-        username = inp("GitHub username: ")
+        username = universal_inp("GitHub username: ")
         password = getpass()
         login = Login(username, password)
     else:
