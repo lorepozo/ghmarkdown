@@ -3,12 +3,12 @@ ghmarkdown
 
 The complete command-line tool for GitHub-flavored markdown. It provides a convenient interface for the API provided by GitHub.
 
-ghmarkdown is much more honed-in than `pandoc <http://johnmacfarlane.net/pandoc>`__, a **massive** tool with *far* more conversion capabilities (but lacking its own hosting capabilities).
+ghmarkdown's `--serve` feature let's you locally view your markdown **live**, so you can view your changes as you work!
 
 Features
 --------
 
--  Host your markdown locally to easily view your changes!
+-  Host your markdown locally to easily view your changes *as you make them*!
 -  Easy to `install <https://github.com/lukedmor/ghmarkdown#installation>`__
 -  Easy to `use <https://github.com/lukedmor/ghmarkdown#usage>`__
 -  Works on Mac, Linux and Windows

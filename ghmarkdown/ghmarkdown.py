@@ -4,11 +4,12 @@
 # GNU Public License
 
 import argparse
+import hashlib
 import base64
 import sys
 import os
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -27,6 +28,7 @@ usage = """
 parser = argparse.ArgumentParser(description=description, usage=usage)
 gh_url = 'https://api.github.com'
 silent = False
+mdhash = None
 
 
 class Login:
@@ -77,7 +79,22 @@ def standalone(html):
             return top + html + bottom
 
 
-def run_server(html, port=8000):
+def changed_file():
+    global mdhash
+    if inputfile is None:
+        return None
+    with open(inputfile, "r") as markdown:
+        data = "".join(markdown.readlines())
+    m = hashlib.md5()
+    m.update(data)
+    new_hash = m.hexdigest()
+    if new_hash == mdhash:
+        return None
+    mdhash = new_hash
+    return data
+
+
+def run_server(port=8000, stdin=False):
     """ Runs server on port with html response """
     import BaseHTTPServer
 
@@ -88,6 +105,10 @@ def run_server(html, port=8000):
             s.end_headers()
 
         def do_GET(s):
+            global html
+            data = changed_file()
+            if data is not None:
+                html = html_from_markdown(data)
             s.send_response(200)
             s.send_header("Content-type", "text/html")
             s.end_headers()
@@ -122,6 +143,9 @@ def main():
     global parser
     global login
     global silent
+    global html
+    global mdhash
+    global inputfile
 
     parser.add_argument('--version', action='store_true',
                         help='input markdown file (otherwise STDIN)')
@@ -138,38 +162,43 @@ def main():
     parser.add_argument('--serve', '-s', action='store_true',
                         help='locally serve parsed markdown')
     parser.add_argument('--port', '-p', metavar='PORT')
-    
+
     args = parser.parse_args()
-    
+
     if args.version:
         print(__version__)
         exit()
-    
+
+    inputfile = args.input
     if args.input:
         with open(args.input, 'r') as markdown:
             data = "".join(markdown.readlines())
     else:
         try:
             data = "".join(sys.stdin.readlines())
+            stdin = True
         except KeyboardInterrupt:
             exit()
-    
+
     if args.login:
         from getpass import getpass
-    
+
         username = inp("GitHub username: ")
         password = getpass()
         login = Login(username, password)
     else:
         login = None
-    
+
     silent = args.silent
     html = html_from_markdown(data)
-    
+    m = hashlib.md5()
+    m.update(data)
+    mdhash = m.hexdigest()
+
     if not args.bare:
         html = standalone(html)
     if args.serve:
-        run_server(html, args.port or 8000)
+        run_server(args.port or 8000)
     elif args.output:
         with open(args.output, 'w') as out:
             out.write(html)

@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 
-version = '0.1.1'
+version = '0.1.2'
 
 setup(
     name='ghmarkdown',
@@ -30,7 +30,7 @@ setup(
             'Programming Language :: Python :: 3.3',
             'Programming Language :: Python :: 3.4',
         ],
-    keywords="markdown html github command-line cli",
+    keywords="markdown live html github command-line cli",
     url='http://github.com/lukedmor/ghmarkdown',
     packages=find_packages(),
     package_data={
