@@ -1,6 +1,12 @@
 ghmarkdown
 ==========
 
+.. image:: https://pypip.in/v/ghmarkdown/badge.svg
+    :alt: PyPi version
+
+.. image:: https://pypi.in/license/ghmarkdown/badge.svg
+    :alt: License
+
 The complete command-line tool for GitHub-flavored markdown. It provides a convenient interface for the API provided by GitHub.
 
 ghmarkdown's `--serve` feature let's you locally view your markdown **live**, so you can view your changes as you work!
