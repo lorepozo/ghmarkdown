@@ -11,7 +11,7 @@ import base64
 import sys
 import os
 
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -120,6 +120,7 @@ def run_server(port=8000):
         def log_message(self, format, *args):
             return
 
+    port = int(port)
     server_class = BaseHTTPServer.HTTPServer
     handler = SilentHTMLHandler if silent else HTMLHandler
     httpd = server_class(("localhost", port), handler)
@@ -206,7 +207,7 @@ def main():
     if not args.bare:
         html = standalone(html)
     if args.serve:
-        run_server(int(args.port) or 8000)
+        run_server(args.port or '8000')
     elif args.output:
         with open(args.output, 'w') as out:
             out.write(html)
