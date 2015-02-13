@@ -24,7 +24,7 @@ else:
 
 description = "The complete command-line tool for GitHub-flavored markdown"
 usage = """
-  ghmarkdown [-a [-sa]] [-h] [--input MD] [--login] [--bare] 
+  ghmarkdown [--auto [--rate SEC]] [-h] [--input MD] [--login] [--bare] 
              [--silent] [--output HTML | --serve [--port PORT]]
 """
 parser = argparse.ArgumentParser(description=description, usage=usage)
@@ -74,7 +74,7 @@ def html_from_markdown(markdown):
         exit()
 
 
-def standalone(html, auto=False):
+def standalone(html):
     """ Returns complete html document given markdown html, with auto refresh if auto=true """
     with open(_ROOT + '/ceiling.dat', 'r') as ceiling:
         with open(_ROOT + '/floor.dat', 'r') as floor:
@@ -118,7 +118,7 @@ def run_server(port=8000):
             s.send_response(200)
             s.send_header("Content-type", "text/html")
             s.end_headers()
-            s.wfile.write(standalone(html, auto))
+            s.wfile.write(standalone(html))
 
     class SilentHTMLHandler(HTMLHandler):
         def log_message(self, format, *args):
@@ -179,17 +179,17 @@ def main():
                         help='locally serve parsed markdown')
     parser.add_argument('--auto', '-a', action='store_true',
                         help='automatically refreshes the server\'s html (default=2s)')
-    parser.add_argument('--setauto', '-sa', metavar='SEC',
+    parser.add_argument('--rate', '-r', metavar='SEC',
                         help='set the auto refresh rate in (integer) seconds', type=int)
     parser.add_argument('--port', '-p', metavar='PORT',
                         help='specifies what port to serve parsed markdown')
 
     args = parser.parse_args()
 
-    auto = True if args.auto else False
+    auto = args.auto
 
-    if args.setauto:
-        auto_refresh = auto_refresh[:-2]+ str(args.setauto) + '"'
+    if args.rate:
+        auto_refresh = auto_refresh[:-2]+ str(args.rate) + '"'
 
     if args.version:
         print(__version__)
@@ -221,7 +221,7 @@ def main():
     mdhash = m.hexdigest()
 
     if not args.bare:
-        html = standalone(html, auto)
+        html = standalone(html)
     if args.serve:
         run_server(args.port or '8000')
     elif args.output:
