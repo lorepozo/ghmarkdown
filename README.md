@@ -38,6 +38,8 @@ $ ghmarkdown --input my_file.md --output my_page.html
 $ cat my_file.md | ghmarkdown > my_page.html
 ```
 
+To refresh the local server automatically, use `ghmarkdown --auto`, which will refresh every 2 seconds to view changes at (almost) the same time you save
+
 Use `ghmarkdown --help` to see all available commands and parameters
 
 GitHub limits usage of its api, so if you want more than 60 req/hr use `--login` (you'll get 5000 req/hr!)
