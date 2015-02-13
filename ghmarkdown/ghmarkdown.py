@@ -24,8 +24,8 @@ else:
 
 description = "The complete command-line tool for GitHub-flavored markdown"
 usage = """
-  ghmarkdown [-a] [-h] [--input MD] [--login] [--bare] [--silent]
-             [--output HTML | --serve [--port PORT]]
+  ghmarkdown [-a [-sa]] [-h] [--input MD] [--login] [--bare] 
+             [--silent] [--output HTML | --serve [--port PORT]]
 """
 parser = argparse.ArgumentParser(description=description, usage=usage)
 gh_url = 'https://api.github.com'
@@ -160,6 +160,7 @@ def main():
     global mdhash
     global inputfile
     global auto
+    global auto_refresh
 
     parser.add_argument('--version', action='store_true',
                         help='input markdown file (otherwise STDIN)')
@@ -176,13 +177,18 @@ def main():
     parser.add_argument('--serve', '-s', action='store_true',
                         help='locally serve parsed markdown')
     parser.add_argument('--auto', '-a', action='store_true',
-                        help='automatically refreshes the server\'s html')
+                        help='automatically refreshes the server\'s html (default=2s)')
+    parser.add_argument('--setauto', '-sa', metavar='SEC',
+                        help='set the auto refresh rate in (integer) seconds', type=int)
     parser.add_argument('--port', '-p', metavar='PORT',
                         help='specifies what port to serve parsed markdown')
 
     args = parser.parse_args()
 
     auto = True if args.auto else False
+
+    if args.setauto:
+        auto_refresh = auto_refresh[:-2]+ str(args.setauto) + '"'
 
     if args.version:
         print(__version__)
