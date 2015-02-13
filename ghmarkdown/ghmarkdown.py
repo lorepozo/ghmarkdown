@@ -30,6 +30,7 @@ usage = """
 parser = argparse.ArgumentParser(description=description, usage=usage)
 gh_url = 'https://api.github.com'
 auto_refresh = '<meta http-equiv="refresh" content="2"'
+
 silent = False
 mdhash = None
 
@@ -74,7 +75,7 @@ def html_from_markdown(markdown):
 
 
 def standalone(html, auto=False):
-    """ Returns complete html document given markdown html """
+    """ Returns complete html document given markdown html, with auto refresh if auto=true """
     with open(_ROOT + '/ceiling.dat', 'r') as ceiling:
         with open(_ROOT + '/floor.dat', 'r') as floor:
             top = "".join(ceiling.readlines())
