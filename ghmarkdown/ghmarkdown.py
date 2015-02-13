@@ -117,7 +117,7 @@ def run_server(port=8000):
             s.send_response(200)
             s.send_header("Content-type", "text/html")
             s.end_headers()
-            s.wfile.write(standalone(html))
+            s.wfile.write(standalone(html, auto))
 
     class SilentHTMLHandler(HTMLHandler):
         def log_message(self, format, *args):
@@ -159,6 +159,7 @@ def main():
     global html
     global mdhash
     global inputfile
+    global auto
 
     parser.add_argument('--version', action='store_true',
                         help='input markdown file (otherwise STDIN)')
@@ -213,7 +214,7 @@ def main():
     mdhash = m.hexdigest()
 
     if not args.bare:
-        html = standalone(html,auto)
+        html = standalone(html, auto)
     if args.serve:
         run_server(args.port or '8000')
     elif args.output:
