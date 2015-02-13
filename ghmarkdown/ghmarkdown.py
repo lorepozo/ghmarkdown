@@ -29,7 +29,7 @@ usage = """
 """
 parser = argparse.ArgumentParser(description=description, usage=usage)
 gh_url = 'https://api.github.com'
-auto_refresh = '<meta http-equiv="refresh" content="2">'
+auto_refresh = '<meta http-equiv="refresh" content="2"/>'
 
 silent = False
 mdhash = None
@@ -189,7 +189,7 @@ def main():
     auto = args.auto
 
     if args.rate:
-        auto_refresh = auto_refresh[:-3]+ str(args.rate) + '">'
+        auto_refresh = auto_refresh[:-4]+ str(args.rate) + '">/'
 
     if args.version:
         print(__version__)
