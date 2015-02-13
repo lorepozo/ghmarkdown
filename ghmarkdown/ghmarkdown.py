@@ -24,11 +24,12 @@ else:
 
 description = "The complete command-line tool for GitHub-flavored markdown"
 usage = """
-  ghmarkdown [-h] [--input MD] [--login] [--bare] [--silent]
+  ghmarkdown [-a] [-h] [--input MD] [--login] [--bare] [--silent]
              [--output HTML | --serve [--port PORT]]
 """
 parser = argparse.ArgumentParser(description=description, usage=usage)
 gh_url = 'https://api.github.com'
+auto_refresh = '<meta http-equiv="refresh" content="2"'
 silent = False
 mdhash = None
 
@@ -72,12 +73,14 @@ def html_from_markdown(markdown):
         exit()
 
 
-def standalone(html):
+def standalone(html, auto=False):
     """ Returns complete html document given markdown html """
     with open(_ROOT + '/ceiling.dat', 'r') as ceiling:
         with open(_ROOT + '/floor.dat', 'r') as floor:
             top = "".join(ceiling.readlines())
             bottom = "".join(floor.readlines())
+            if auto:
+                top = top.replace('\n','')[:27] + auto_refresh + top.replace('\n','')[27:]
             return top + html + bottom
 
 
@@ -171,9 +174,14 @@ def main():
                         help='silences server output and rate information')
     parser.add_argument('--serve', '-s', action='store_true',
                         help='locally serve parsed markdown')
-    parser.add_argument('--port', '-p', metavar='PORT')
+    parser.add_argument('--auto', '-a', action='store_true',
+                        help='automatically refreshes the server\'s html')
+    parser.add_argument('--port', '-p', metavar='PORT',
+                        help='specifies what port to serve parsed markdown')
 
     args = parser.parse_args()
+
+    auto = True if args.auto else False
 
     if args.version:
         print(__version__)
@@ -205,7 +213,7 @@ def main():
     mdhash = m.hexdigest()
 
     if not args.bare:
-        html = standalone(html)
+        html = standalone(html,auto)
     if args.serve:
         run_server(args.port or '8000')
     elif args.output:
