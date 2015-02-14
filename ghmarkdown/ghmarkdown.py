@@ -24,11 +24,13 @@ else:
 
 description = "The complete command-line tool for GitHub-flavored markdown"
 usage = """
-  ghmarkdown [-h] [--input MD] [--login] [--bare] [--silent]
-             [--output HTML | --serve [--port PORT]]
+  ghmarkdown [--auto [--rate SEC]] [-h] [--input MD] [--login] [--bare] 
+             [--silent] [--output HTML | --serve [--port PORT]]
 """
 parser = argparse.ArgumentParser(description=description, usage=usage)
 gh_url = 'https://api.github.com'
+refresh_fmt = '<meta http-equiv="refresh" content="%s"/>'
+
 silent = False
 mdhash = None
 
@@ -73,11 +75,13 @@ def html_from_markdown(markdown):
 
 
 def standalone(html):
-    """ Returns complete html document given markdown html """
+    """ Returns complete html document given markdown html, with auto refresh if auto=true """
     with open(_ROOT + '/ceiling.dat', 'r') as ceiling:
         with open(_ROOT + '/floor.dat', 'r') as floor:
             top = "".join(ceiling.readlines())
             bottom = "".join(floor.readlines())
+            if auto:
+                top = top.replace('\n','')[:27] + refresh_fmt + top.replace('\n','')[27:]
             return top + html + bottom
 
 
@@ -156,6 +160,8 @@ def main():
     global html
     global mdhash
     global inputfile
+    global auto
+    global refresh_fmt
 
     parser.add_argument('--version', action='store_true',
                         help='input markdown file (otherwise STDIN)')
@@ -171,9 +177,18 @@ def main():
                         help='silences server output and rate information')
     parser.add_argument('--serve', '-s', action='store_true',
                         help='locally serve parsed markdown')
-    parser.add_argument('--port', '-p', metavar='PORT')
+    parser.add_argument('--auto', '-a', action='store_true',
+                        help='automatically refreshes the server\'s html (default=2s)')
+    parser.add_argument('--rate', '-r', metavar='SEC',
+                        help='set the auto refresh rate in (integer) seconds', type=int)
+    parser.add_argument('--port', '-p', metavar='PORT',
+                        help='specifies what port to serve parsed markdown')
 
     args = parser.parse_args()
+
+    auto = args.auto
+
+    refresh_fmt = refresh_fmt % (args.rate or 2)
 
     if args.version:
         print(__version__)
