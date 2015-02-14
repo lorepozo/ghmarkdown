@@ -10,21 +10,20 @@ import hashlib
 import base64
 import sys
 import os
+import requests
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info[0] == 3:
-    import urllib.request as ul
     universal_inp = input
 else:
-    import urllib2 as ul
     universal_inp = raw_input
 
 description = "The complete command-line tool for GitHub-flavored markdown"
 usage = """
-  ghmarkdown [-h] [--input MD] [--login] [--bare] [--silent]
+  ghmarkdown [--help] [--login] [--bare] [--silent] [--input MD]
              [--output HTML | --serve [--port PORT]]
 """
 parser = argparse.ArgumentParser(description=description, usage=usage)
@@ -34,43 +33,47 @@ mdhash = None
 
 
 class Login:
-    def __init__(self, username, password):
+    def __init__(self, username=None, password=None):
         self.username = username
         self.password = password
+        self.good = True
 
     def auth(self):
-        """ Returns header value for Authorization """
-        token = base64.encodestring("%s:%s" % (self.username, self.password))
-        return "Basic " + token.replace('\n', '')
+        """ Returns auth token """
+        return (self.username, self.password) if self.good else None
+
+    def devalue(self):
+        self.good = False
+
+
+class RequestError(Exception):
+    pass
 
 
 def html_from_markdown(markdown):
     """ Takes raw markdown, returns html result from GitHub api """
 
-    headers = {'Content-Type': 'text/plain', 'charset': 'utf-8'}
-
     if login:
-        headers["Authorization"] = login.auth()
-        try:
-            ul.urlopen(ul.Request(gh_url+"/rate_limit", headers=headers))
-        except ul.HTTPError as e:
-            if "401" not in str(e):
-                raise
+        r = requests.get(gh_url+"/rate_limit", auth=login.auth())
+        if r.status_code >= 400:
+            if r.status_code != 401:
+                err = RequestError('Bad HTTP Status Code: %s' % r.status_code)
+                raise err
             sys.stderr.write('Unauthorized. Proceeding without login...')
-            del headers['Authorization']
+            login.devalue()
 
-    r = ul.Request(gh_url + "/markdown/raw", data=markdown, headers=headers)
-    try:
-        o = ul.urlopen(r)
-        if not silent:
-            sys.stdout.write("\n%s requests remaining, resets in %d minutes\n"
-                             % rate_limit_info())
-        return o.read().replace("\n\n", "\n")
-    except ul.HTTPError as e:
-        if "403" not in str(e):
-            raise
-        exit()
+    headers = {'content-type': 'text/plain', 'charset': 'utf-8'}
 
+    r = requests.post(gh_url + "/markdown/raw", data=markdown,
+                      auth=login.auth(), headers=headers)
+    if r.status_code >= 400 and r.status_code != 403:
+            err = RequestError('Bad HTTP Status Code: %s' % r.status_code)
+            raise err
+
+    if not silent:
+        sys.stdout.write("\n%s requests remaining, resets in %d minutes\n"
+                         % rate_limit_info())
+    return r.text.replace("\n\n", "\n")
 
 def standalone(html):
     """ Returns complete html document given markdown html """
@@ -83,6 +86,7 @@ def standalone(html):
 
 def changed_file():
     global mdhash
+
     if inputfile is None:
         return None
     with open(inputfile, "r") as markdown:
@@ -108,6 +112,7 @@ def run_server(port=8000):
 
         def do_GET(s):
             global html
+
             data = changed_file()
             if data is not None:
                 html = html_from_markdown(data)
@@ -140,11 +145,8 @@ def rate_limit_info():
     import json
     import time
 
-    headers = {'Content-Type': 'text/plain', 'charset': 'utf-8'}
-    if login:
-        headers["Authorization"] = login.auth()
-    req = ul.Request(gh_url + "/rate_limit", headers=headers)
-    out = json.loads(ul.urlopen(req).read())
+    r = requests.get(gh_url + "/rate_limit", auth=login.auth())
+    out = json.loads(r.text)
     mins = (out["resources"]["core"]["reset"]-time.time())/60
     return out["resources"]["core"]["remaining"], mins
 
@@ -196,7 +198,7 @@ def main():
         password = getpass()
         login = Login(username, password)
     else:
-        login = None
+        login = Login()
 
     silent = args.silent
     html = html_from_markdown(data)
