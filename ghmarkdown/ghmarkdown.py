@@ -29,7 +29,7 @@ usage = """
 """
 parser = argparse.ArgumentParser(description=description, usage=usage)
 gh_url = 'https://api.github.com'
-auto_refresh = '<meta http-equiv="refresh" content="2"/>'
+refresh_fmt = '<meta http-equiv="refresh" content="%s"/>'
 
 silent = False
 mdhash = None
@@ -81,7 +81,7 @@ def standalone(html):
             top = "".join(ceiling.readlines())
             bottom = "".join(floor.readlines())
             if auto:
-                top = top.replace('\n','')[:27] + auto_refresh + top.replace('\n','')[27:]
+                top = top.replace('\n','')[:27] + refresh_fmt + top.replace('\n','')[27:]
             return top + html + bottom
 
 
@@ -161,7 +161,7 @@ def main():
     global mdhash
     global inputfile
     global auto
-    global auto_refresh
+    global refresh_fmt
 
     parser.add_argument('--version', action='store_true',
                         help='input markdown file (otherwise STDIN)')
@@ -188,8 +188,7 @@ def main():
 
     auto = args.auto
 
-    if args.rate:
-        auto_refresh = auto_refresh[:-4]+ str(args.rate) + '">/'
+    refresh_fmt = refresh_fmt % (args.rate or 2)
 
     if args.version:
         print(__version__)
