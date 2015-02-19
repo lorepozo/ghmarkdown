@@ -12,7 +12,7 @@ import sys
 import os
 import requests
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -23,13 +23,16 @@ else:
 
 description = "The complete command-line tool for GitHub-flavored markdown"
 usage = """
-  ghmarkdown [--help] [--login] [--bare] [--silent] [--input MD]
+  ghmarkdown [--help | --version] [--login] [--bare] [--silent] [--input MD]
              [--output HTML | --serve [--port PORT]]
 """
 parser = argparse.ArgumentParser(description=description, usage=usage)
 gh_url = 'https://api.github.com'
 silent = False
 mdhash = None
+inputfile = None
+title = lambda: "ghmarkdown" if inputfile is None else inputfile.split("/")[-1]
+html_title = lambda: "<title>%s</title>" % title()
 
 
 class Login:
@@ -75,11 +78,13 @@ def html_from_markdown(markdown):
                          % rate_limit_info())
     return r.text.replace("\n\n", "\n")
 
+
 def standalone(html):
     """ Returns complete html document given markdown html """
     with open(_ROOT + '/ceiling.dat', 'r') as ceiling:
         with open(_ROOT + '/floor.dat', 'r') as floor:
-            top = "".join(ceiling.readlines())
+            head = html_title()
+            top = "".join(ceiling.readlines()).replace("{{HEAD}}", head)
             bottom = "".join(floor.readlines())
             return top + html + bottom
 
