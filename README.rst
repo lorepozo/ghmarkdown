@@ -74,6 +74,6 @@ See all features and parameters:
 GitHub limits usage of its api, so if you want more than 60 req/hr use
 ``--login`` (you'll get 5000 req/hr!)
 
-.. |PyPi version| image:: https://pypip.in/v/ghmarkdown/badge.svg
-.. |License| image:: https://pypip.in/license/ghmarkdown/badge.svg
+.. |PyPi version| image:: https://pypip.in/v/ghmarkdown/badge.svg?style=flat
+.. |License| image:: https://pypip.in/license/ghmarkdown/badge.svg?style=flat
 .. |example usage gif| image:: http://i.imgur.com/WUCWpOM.gif

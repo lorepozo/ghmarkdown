@@ -1,7 +1,7 @@
 # ghmarkdown
 
-![PyPi version](https://pypip.in/v/ghmarkdown/badge.svg)
-![License](https://pypip.in/license/ghmarkdown/badge.svg)
+![PyPi version](https://pypip.in/v/ghmarkdown/badge.svg?style=flat)
+![License](https://pypip.in/license/ghmarkdown/badge.svg?style=flat)
 
 The complete command-line tool for GitHub-flavored markdown. It provides a convenient interface for the API provided by GitHub.
 
