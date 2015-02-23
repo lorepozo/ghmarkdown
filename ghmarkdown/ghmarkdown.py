@@ -12,7 +12,7 @@ import sys
 import os
 import requests
 
-__version__ = "1.0.2"
+__version__ = "1.0.4"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -62,7 +62,7 @@ def html_from_markdown(markdown):
             if r.status_code != 401:
                 err = RequestError('Bad HTTP Status Code: %s' % r.status_code)
                 raise err
-            sys.stderr.write('Unauthorized. Proceeding without login...')
+            sys.stderr.write('Unauthorized. Proceeding without login...\n')
             login.devalue()
 
     headers = {'content-type': 'text/plain', 'charset': 'utf-8'}
@@ -74,7 +74,7 @@ def html_from_markdown(markdown):
             raise err
 
     if not silent:
-        sys.stdout.write("\n%s requests remaining, resets in %d minutes\n"
+        sys.stderr.write("%s requests remaining, resets in %d minutes\n"
                          % rate_limit_info())
     return r.text.replace("\n\n", "\n")
 
@@ -164,8 +164,7 @@ def main():
     global mdhash
     global inputfile
 
-    parser.add_argument('--version', action='store_true',
-                        help='input markdown file (otherwise STDIN)')
+    parser.add_argument('--version', action='store_true')
     parser.add_argument('--input', '-i', metavar='MD',
                         help='input markdown file (otherwise STDIN)')
     parser.add_argument('--output', '-o', metavar='HTML',
@@ -184,17 +183,22 @@ def main():
 
     if args.version:
         print(__version__)
-        exit()
+        sys.exit(0)
 
     inputfile = args.input
     if args.input:
-        with open(args.input, 'r') as markdown:
-            data = "".join(markdown.readlines())
+        if os.path.isfile(args.input):
+            with open(args.input, 'r') as markdown:
+                data = "".join(markdown.readlines())
+        else:
+            sys.stderr.write("Input file doesn't exist\n")
+            sys.exit(1)
     else:
         try:
             data = "".join(sys.stdin.readlines())
         except KeyboardInterrupt:
-            exit()
+            print()
+            sys.exit(0)
 
     if args.login:
         from getpass import getpass
@@ -219,7 +223,7 @@ def main():
         with open(args.output, 'w') as out:
             out.write(html)
     else:
-        sys.stdout.write(html)
+        print(html)
 
 if __name__ == '__main__':
     main()
