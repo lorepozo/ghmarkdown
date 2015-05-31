@@ -12,14 +12,9 @@ import sys
 import os
 import requests
 
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
-
-if sys.version_info[0] == 3:
-    universal_inp = input
-else:
-    universal_inp = raw_input
 
 description = "The complete command-line tool for GitHub-flavored markdown"
 usage = """
@@ -79,14 +74,14 @@ def html_from_markdown(markdown):
     return r.text.replace("\n\n", "\n")
 
 
-def standalone(html):
+def standalone(body):
     """ Returns complete html document given markdown html """
-    with open(_ROOT + '/ceiling.dat', 'r') as ceiling:
-        with open(_ROOT + '/floor.dat', 'r') as floor:
-            head = html_title()
-            top = "".join(ceiling.readlines()).replace("{{HEAD}}", head)
-            bottom = "".join(floor.readlines())
-            return top + html + bottom
+    with open(_ROOT + '/html.dat', 'r') as html_template:
+        head = html_title()
+        html = "".join(html_template.readlines()) \
+                    .replace("{{HEAD}}", head) \
+                    .replace("{{BODY}}", body)
+        return html
 
 
 def changed_file():
@@ -97,7 +92,7 @@ def changed_file():
     with open(inputfile, "r") as markdown:
         data = "".join(markdown.readlines())
     m = hashlib.md5()
-    m.update(data)
+    m.update(data.encode('utf-8'))
     new_hash = m.hexdigest()
     if new_hash == mdhash:
         return None
@@ -107,9 +102,9 @@ def changed_file():
 
 def run_server(port=8000):
     """ Runs server on port with html response """
-    import BaseHTTPServer
+    from http.server import BaseHTTPRequestHandler, HTTPServer
 
-    class HTMLHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+    class HTMLHandler(BaseHTTPRequestHandler):
         def do_HEAD(s):
             s.send_response(200)
             s.send_header("Content-type", "text/html")
@@ -124,16 +119,20 @@ def run_server(port=8000):
             s.send_response(200)
             s.send_header("Content-type", "text/html")
             s.end_headers()
-            s.wfile.write(standalone(html))
+            s.wfile.write(standalone(html).encode('utf-8'))
 
     class SilentHTMLHandler(HTMLHandler):
         def log_message(self, format, *args):
             return
 
     port = int(port)
-    server_class = BaseHTTPServer.HTTPServer
+    server_class = HTTPServer
     handler = SilentHTMLHandler if silent else HTMLHandler
-    httpd = server_class(("localhost", port), handler)
+    try:
+        httpd = server_class(("localhost", port), handler)
+    except PermissionError:
+        sys.stderr.write("Permission denied\n")
+        sys.exit(1)
     if not silent:
         print("Hosting server on port %d. Ctrl-c to exit" % port)
     try:
@@ -142,7 +141,7 @@ def run_server(port=8000):
         pass
     httpd.server_close()
     if not silent:
-        print("Shutting down server")
+        print("\rShutting down server")
 
 
 def rate_limit_info():
@@ -188,7 +187,7 @@ def main():
     inputfile = args.input
     if args.input:
         if os.path.isfile(args.input):
-            with open(args.input, 'r') as markdown:
+            with open(args.input, 'r', encoding='utf-8') as markdown:
                 data = "".join(markdown.readlines())
         else:
             sys.stderr.write("Input file doesn't exist\n")
@@ -198,21 +197,25 @@ def main():
             data = "".join(sys.stdin.readlines())
         except KeyboardInterrupt:
             print()
-            sys.exit(0)
+            sys.exit(1)
 
     if args.login:
         from getpass import getpass
 
-        username = universal_inp("GitHub username: ")
-        password = getpass()
-        login = Login(username, password)
+        try:
+            username = input("GitHub username: ")
+            password = getpass()
+            login = Login(username, password)
+        except KeyboardInterrupt:
+            print()
+            sys.exit(1)
     else:
         login = Login()
 
     silent = args.silent
     html = html_from_markdown(data)
     m = hashlib.md5()
-    m.update(data)
+    m.update(data.encode('utf-8'))
     mdhash = m.hexdigest()
 
     if not args.bare:

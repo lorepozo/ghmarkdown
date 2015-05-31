@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 
-version = '1.0.5'
+version = '1.0.6'
 
 setup(
     name='ghmarkdown',
@@ -22,9 +22,6 @@ setup(
             'Topic :: Text Processing :: Markup',
             'Topic :: Text Processing :: Markup :: HTML',
             'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
-            'Programming Language :: Python :: 2',
-            'Programming Language :: Python :: 2.6',
-            'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3.2',
             'Programming Language :: Python :: 3.3',
