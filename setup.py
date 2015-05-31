@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 
-version = '1.0.6'
+version = '1.0.7'
 
 setup(
     name='ghmarkdown',
@@ -31,7 +31,7 @@ setup(
     url='http://github.com/lukedmor/ghmarkdown',
     packages=find_packages(),
     package_data={
-        'ghmarkdown': ['ceiling.dat', 'floor.dat']
+        'ghmarkdown': ['html.dat']
     },
     install_requires = ['requests'],
     entry_points={
