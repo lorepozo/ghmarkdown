@@ -12,7 +12,7 @@ import sys
 import os
 import requests
 
-__version__ = "1.0.7"
+__version__ = "1.0.8"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -71,7 +71,7 @@ def html_from_markdown(markdown):
     if not silent:
         sys.stderr.write("%s requests remaining, resets in %d minutes\n"
                          % rate_limit_info())
-    return r.text.replace("\n\n", "\n")
+    return r.text
 
 
 def standalone(body):
