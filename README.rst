@@ -9,7 +9,7 @@ a convenient interface for the API provided by GitHub.
 ghmarkdown's ``--serve`` feature let's you locally view your markdown
 **live**, so you can view your changes as you work!
 
-|example usage gif|
+|usage gif|
 
 Features
 --------
@@ -76,4 +76,4 @@ GitHub limits usage of its api, so if you want more than 60 req/hr use
 .. |PyPi version| image:: https://img.shields.io/pypi/v/ghmarkdown.svg
    :target: https://pypi.python.org/pypi/ghmarkdown/
 .. |Python version| image:: https://img.shields.io/badge/Python-3-brightgreen.svg?style=flat
-.. |example usage gif| image:: https://github.com/lucasem/ghmarkdown/blob/master/demo.gif
+.. |usage gif| image:: https://raw.githubusercontent.com/lucasem/ghmarkdown/master/demo.gif
