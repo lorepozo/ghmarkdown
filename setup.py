@@ -3,18 +3,18 @@
 from setuptools import setup, find_packages
 
 
-version = '1.0.8'
+version = '2.0.0'
 
 setup(
     name='ghmarkdown',
     version=version,
-    description='ghmarkdown is the complete command-line tool for GitHub-flavored markdown',
+    description='ghmarkdown is the complete command-line \
+            tool for GitHub-flavored markdown',
     long_description=open('README.rst').read(),
     author='Lucas Morales',
-    author_email='lucasem@mit.edu',
+    author_email='lucas@lucasem.com',
     license='GNU GPL v2.0',
     classifiers=[
-            'Development Status :: 4 - Beta',
             'Intended Audience :: Developers',
             'Topic :: Communications',
             'Topic :: Software Development',
@@ -26,17 +26,20 @@ setup(
             'Programming Language :: Python :: 3.2',
             'Programming Language :: Python :: 3.3',
             'Programming Language :: Python :: 3.4',
+            'Programming Language :: Python :: 3.5',
+            'Programming Language :: Python :: 3.6',
         ],
     keywords="markdown live html github command command-line cli",
-    url='http://github.com/lukedmor/ghmarkdown',
+    url='http://github.com/lucasem/ghmarkdown',
     packages=find_packages(),
     package_data={
         'ghmarkdown': ['html.dat']
     },
-    install_requires = ['requests'],
+    python_requires='>=3',
+    install_requires=['requests'],
     entry_points={
         'console_scripts': [
-            'ghmarkdown=ghmarkdown.ghmarkdown:main'
+            'ghmarkdown=ghmarkdown:main'
         ],
     }
 )

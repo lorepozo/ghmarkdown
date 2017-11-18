@@ -1,7 +1,7 @@
 ghmarkdown
 ==========
 
-| |PyPi version| |License|
+| |PyPi version|
 
 The complete command-line tool for GitHub-flavored markdown. It provides
 a convenient interface for the API provided by GitHub.
@@ -14,8 +14,7 @@ ghmarkdown's ``--serve`` feature let's you locally view your markdown
 Features
 --------
 
--  Host your markdown locally to easily view your changes *as you make
-   them*!
+-  Host your markdown locally to easily view your changes upon refresh.
 -  Easy to `install <#installation>`__
 -  Easy to `use <#usage>`__
 -  Works on Mac, Linux, and Windows
@@ -54,7 +53,7 @@ See all features and parameters:
 
     $ ghmarkdown --help
     usage:
-      ghmarkdown [--help | --version] [--login] [--bare] [--silent] [--input MD]
+      ghmarkdown [--help | --version] [--login] [--bare] [--verbose] [--input MD]
                  [--output HTML | --serve [--port PORT]]
 
     The complete command-line tool for GitHub-flavored markdown
@@ -67,13 +66,14 @@ See all features and parameters:
                             output html file (otherwise STDOUT)
       --login, -l           allows for more requests
       --bare, -b            disable standalone html (gives fragment)
-      --silent, -q          silences server output and rate information
+      --verbose, -v         displays server output and rate information
       --serve, -s           locally serve parsed markdown
       --port PORT, -p PORT
 
 GitHub limits usage of its api, so if you want more than 60 req/hr use
-``--login`` (you'll get 5000 req/hr!)
+``--login`` (you'll get 5000 req/hr)
 
-.. |PyPi version| image:: https://pypip.in/v/ghmarkdown/badge.svg?style=flat
-.. |License| image:: https://pypip.in/license/ghmarkdown/badge.svg?style=flat
-.. |example usage gif| image:: http://i.imgur.com/WUCWpOM.gif
+.. |PyPi version| image:: https://img.shields.io/pypi/v/ghmarkdown.svg
+   :target: https://pypi.python.org/pypi/ghmarkdown/
+.. |Python version| image:: https://img.shields.io/badge/Python-3-brightgreen.svg?style=flat
+.. |example usage gif| image:: https://github.com/lucasem/ghmarkdown/blob/master/demo.gif

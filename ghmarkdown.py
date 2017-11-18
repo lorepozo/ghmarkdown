@@ -12,22 +12,28 @@ import sys
 import os
 import requests
 
-__version__ = "1.0.8"
+__version__ = "2.0.0"
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
 description = "The complete command-line tool for GitHub-flavored markdown"
 usage = """
-  ghmarkdown [--help | --version] [--login] [--bare] [--silent] [--input MD]
+  ghmarkdown [--help | --version] [--login] [--bare] [--verbose] [--input MD]
              [--output HTML | --serve [--port PORT]]
 """
 parser = argparse.ArgumentParser(description=description, usage=usage)
 gh_url = 'https://api.github.com'
-silent = False
+verbose = False
 mdhash = None
 inputfile = None
-title = lambda: "ghmarkdown" if inputfile is None else inputfile.split("/")[-1]
-html_title = lambda: "<title>%s</title>" % title()
+
+
+def title():
+    return "ghmarkdown" if inputfile is None else inputfile.split("/")[-1]
+
+
+def html_title():
+    return "<title>%s</title>" % title()
 
 
 class Login:
@@ -57,18 +63,19 @@ def html_from_markdown(markdown):
             if r.status_code != 401:
                 err = RequestError('Bad HTTP Status Code: %s' % r.status_code)
                 raise err
-            sys.stderr.write('Unauthorized. Proceeding without login...\n')
+            if verbose:
+                sys.stderr.write('Unauthorized. Proceeding without login...\n')
             login.devalue()
 
     headers = {'content-type': 'text/plain', 'charset': 'utf-8'}
 
-    r = requests.post(gh_url + "/markdown/raw", data=markdown,
+    r = requests.post(gh_url + "/markdown/raw", data=markdown.encode('utf-8'),
                       auth=login.auth(), headers=headers)
     if r.status_code >= 400 and r.status_code != 403:
             err = RequestError('Bad HTTP Status Code: %s' % r.status_code)
             raise err
 
-    if not silent:
+    if verbose:
         sys.stderr.write("%s requests remaining, resets in %d minutes\n"
                          % rate_limit_info())
     return r.text
@@ -79,8 +86,8 @@ def standalone(body):
     with open(_ROOT + '/html.dat', 'r') as html_template:
         head = html_title()
         html = "".join(html_template.readlines()) \
-                    .replace("{{HEAD}}", head) \
-                    .replace("{{BODY}}", body)
+                 .replace("{{HEAD}}", head) \
+                 .replace("{{BODY}}", body)
         return html
 
 
@@ -104,7 +111,7 @@ def run_server(port=8000):
     """ Runs server on port with html response """
     from http.server import BaseHTTPRequestHandler, HTTPServer
 
-    class HTMLHandler(BaseHTTPRequestHandler):
+    class VerboseHTMLHandler(BaseHTTPRequestHandler):
         def do_HEAD(s):
             s.send_response(200)
             s.send_header("Content-type", "text/html")
@@ -121,26 +128,26 @@ def run_server(port=8000):
             s.end_headers()
             s.wfile.write(standalone(html).encode('utf-8'))
 
-    class SilentHTMLHandler(HTMLHandler):
+    class SilentHTMLHandler(VerboseHTMLHandler):
         def log_message(self, format, *args):
             return
 
     port = int(port)
     server_class = HTTPServer
-    handler = SilentHTMLHandler if silent else HTMLHandler
+    handler = VerboseHTMLHandler if verbose else SilentHTMLHandler
     try:
         httpd = server_class(("localhost", port), handler)
     except PermissionError:
         sys.stderr.write("Permission denied\n")
         sys.exit(1)
-    if not silent:
+    if verbose:
         print("Hosting server on port %d. Ctrl-c to exit" % port)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
     httpd.server_close()
-    if not silent:
+    if verbose:
         print("\rShutting down server")
 
 
@@ -158,7 +165,7 @@ def rate_limit_info():
 def main():
     global parser
     global login
-    global silent
+    global verbose
     global html
     global mdhash
     global inputfile
@@ -172,8 +179,8 @@ def main():
                         help='allows for more requests')
     parser.add_argument('--bare', '-b', action='store_true',
                         help='disable standalone html (gives fragment)')
-    parser.add_argument('--silent', '-q', action='store_true',
-                        help='silences server output and rate information')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='displays server output and rate information')
     parser.add_argument('--serve', '-s', action='store_true',
                         help='locally serve parsed markdown')
     parser.add_argument('--port', '-p', metavar='PORT')
@@ -212,7 +219,7 @@ def main():
     else:
         login = Login()
 
-    silent = args.silent
+    verbose = args.verbose
     html = html_from_markdown(data)
     m = hashlib.md5()
     m.update(data.encode('utf-8'))
@@ -227,6 +234,7 @@ def main():
             out.write(html)
     else:
         print(html)
+
 
 if __name__ == '__main__':
     main()

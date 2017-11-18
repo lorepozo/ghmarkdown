@@ -1,4 +1,2 @@
-include *.md
-include *.rst
-
-include ghmarkdown/*.dat
+include README.rst
+include html.dat
