@@ -1,2 +1,2 @@
 include README.rst
-include html.dat
+include ghmarkdown/html.dat

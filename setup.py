@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 
-version = '2.0.1'
+version = '2.0.2'
 
 setup(
     name='ghmarkdown',
@@ -39,7 +39,7 @@ setup(
     install_requires=['requests'],
     entry_points={
         'console_scripts': [
-            'ghmarkdown=ghmarkdown:main'
+            'ghmarkdown=ghmarkdown.ghmarkdown:main'
         ],
     }
 )
